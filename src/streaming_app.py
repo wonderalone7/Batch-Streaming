@@ -67,44 +67,22 @@ def process_batch(csv_file, batch_num):
         print(f"ERROR processing {csv_file}: {e}")
         return False
 
-def main():
-    """Monitor and process CSV files"""
-    input_dir = "/app/streaming_input"
-    processed_dir = "/app/processed_files"
-    os.makedirs(processed_dir, exist_ok=True)
-    
-    batch_num = 0
-    processed_files = set()
-    
-    print("="*80)
-    print("Real-Time Batch Processing Started")
-    print("Monitoring: /app/streaming_input")
-    print("Output: /app/output")
-    print("="*80)
-    
-    try:
-        while True:
-            # Find all CSV files
-            csv_files = sorted(glob.glob(f"{input_dir}/*.csv"))
-            
-            # Process new files
-            for csv_file in csv_files:
-                if csv_file not in processed_files:
-                    if process_batch(csv_file, batch_num):
-                        processed_files.add(csv_file)
-                        batch_num += 1
-                        
-                        # Move processed file to archive
-                        import shutil
-                        archived_file = os.path.join(processed_dir, Path(csv_file).name)
-                        shutil.move(csv_file, archived_file)
-                        print(f"Archived: {csv_file}\n")
-            
-            # Wait before checking again
-            time.sleep(10)
-            
-    except KeyboardInterrupt:
-        print("\n\nShutting down gracefully...")
+# ============================================================================
+# NOTE: For Airflow integration, use only the functions above
+# DO NOT use this file to run directly - instead, use the Airflow DAG:
+#   dags/streaming_batch_dag.py
+#
+# The functions in this file are called by the Airflow DAG
+# ============================================================================
 
 if __name__ == "__main__":
-    main()
+    # For local testing ONLY
+    print("="*80)
+    print("🚀 LOCAL TESTING MODE")
+    print("="*80)
+    print("\nFor production use, deploy the Airflow DAG:")
+    print("  → dags/streaming_batch_dag.py")
+    print("\nThis script is now a LIBRARY of functions used by Airflow.")
+    print("\nTo test locally, use:")
+    print("  python -c \"from src.streaming_app import process_batch; process_batch('path/to/file.csv', 1)\"")
+    print("="*80)
